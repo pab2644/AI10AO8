@@ -1,0 +1,2605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MP-AI10AO8 Configuration</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            flex-shrink: 0;
+            position: fixed;
+            left: -260px;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar.active { left: 0; }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar-header h2 {
+            font-size: 16px;
+            margin: 0;
+            color: #ecf0f1;
+            line-height: 1.2;
+        }
+
+        .module-logo {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .nav-section { margin-bottom: 10px; }
+
+        .nav-header {
+            padding: 12px;
+            background: #34495e;
+            cursor: pointer;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .nav-items { display: none; padding-left: 0; }
+        .nav-items.active { display: block; }
+
+        .nav-item {
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 6px;
+            margin: 3px 0;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .nav-item:active { background: #34495e; }
+        .nav-item.active { background: #3498db; }
+
+        .menu-toggle {
+            display: block;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .overlay.active { display: block; }
+
+        .main-content {
+            flex: 1;
+            padding: 15px;
+            margin-left: 0;
+            padding-top: 60px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header h1 { font-size: 20px; color: #2c3e50; }
+
+        .lang-switch { display: flex; gap: 5px; }
+
+        .lang-btn {
+            padding: 6px 12px;
+            border: 1px solid #3498db;
+            background: transparent;
+            color: #3498db;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .lang-btn.active { background: #3498db; color: white; }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .tab-content.active { display: block; }
+        .tab-content h3 { color: #2c3e50; margin-bottom: 8px; font-size: 18px; }
+        .tab-desc { color: #7f8c8d; margin-bottom: 20px; font-size: 13px; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .info-card h4 { color: #34495e; margin-bottom: 10px; font-size: 14px; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+            flex-wrap: wrap;
+        }
+
+        .info-label { color: #7f8c8d; flex: 1; min-width: 100px; }
+
+        .info-value {
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: right;
+            word-break: break-all;
+        }
+
+        .time-group {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .time-group h4 { color: #34495e; margin-bottom: 12px; font-size: 14px; }
+
+        .form-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+        .form-group { flex: 1; min-width: 100%; }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-input:focus, .form-select:focus { outline: none; border-color: #3498db; }
+
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+        .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; }
+
+        .form-hint {
+            display: block;
+            margin-top: 4px;
+            font-size: 12px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .actions-bar { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .btn-primary { background: #3498db; color: white; }
+        .btn-primary:active { background: #2980b9; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-secondary { background: #95a5a6; color: white; }
+        .btn-secondary:hover { background: #7f8c8d; }
+        .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-set {
+            padding: 4px 12px;
+            font-size: 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .di-table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 10px 0;
+        }
+
+        .di-table { width: 100%; border-collapse: collapse; min-width: 400px; }
+
+        .di-table th, .di-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .di-table th { background: #ecf0f1; color: #34495e; font-weight: 600; }
+
+        .di-table input[type="text"],
+        .di-table input[type="number"],
+        .di-table select {
+            width: 100%;
+            min-width: 80px;
+            padding: 6px;
+            box-sizing: border-box;
+            font-size: 13px;
+        }
+
+        .sub-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .sub-tab {
+            padding: 12px 15px;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .sub-tab.active { color: #3498db; border-bottom-color: #3498db; }
+
+        .sub-tab-content { display: none; }
+        .sub-tab-content.active { display: block; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 90%;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h3 { margin-bottom: 15px; font-size: 16px; }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .modal-actions .btn { flex: 1; min-width: 100px; }
+
+        .notification {
+            position: fixed;
+            top: 70px;
+            right: 15px;
+            left: 15px;
+            padding: 15px;
+            background: #27ae60;
+            color: white;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 3000;
+            display: none;
+            text-align: center;
+        }
+
+        .notification.active { display: block; }
+        .notification.error { background: #e74c3c; }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 4000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 8px;
+            max-width: 90%;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .login-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #2c3e50;
+        }
+
+        .login-box p { margin-bottom: 20px; color: #7f8c8d; font-size: 13px; }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .reboot-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-direction: column;
+            gap: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .reboot-overlay.active { display: flex; }
+
+        .saving-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 4500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .saving-overlay.active {
+            display: flex;
+        }
+
+        .saving-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .saving-text {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #95a5a6;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            border: 2px solid transparent;
+        }
+
+        .file-input-label:hover {
+            background: #7f8c8d;
+        }
+
+        .file-input-label.selected {
+            background: #27ae60;
+            border-color: #219a52;
+        }
+
+        .file-input-label.selected:hover {
+            background: #219a52;
+        }
+
+        .file-icon {
+            font-size: 18px;
+        }
+
+        .file-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .field-invalid { border: 2px solid #e74c3c !important; background-color: #fff5f5 !important; }
+
+        .readonly-value {
+            font-weight: 600;
+            color: #333;
+            background: #f8f9fa;
+            padding: 6px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .readonly-value.error {
+            color: #e74c3c;
+            background: #fff5f5;
+            font-weight: bold;
+        }
+
+        .time-synced { color: #27ae60 !important; }
+        .time-unsynced { color: #e74c3c !important; }
+
+        .toggle-password-btn {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            color: #7f8c8d;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar { position: static; left: 0; height: auto; width: 260px; }
+            .main-content { margin-left: 0; padding: 30px; padding-top: 30px; }
+            .menu-toggle { display: none; }
+            .overlay { display: none !important; }
+            .info-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+            .form-group { min-width: 200px; }
+            .notification { left: auto; right: 20px; top: 20px; width: auto; max-width: 400px; }
+            .nav-item:hover { background: #34495e; }
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar { width: 280px; }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="menu-toggle" id="menu-toggle">☰</button>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <svg class="module-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8.25208 7.86744" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;">
+                    <defs>
+                        <style type="text/css">
+                            .str0 {stroke:#1F1A17;stroke-width:0.0166874}
+                            .fil0 {fill:none}
+                            .fil1 {fill:#0E538F}
+                        </style>
+                    </defs>
+                    <g id="Layer_x0020_1">
+                        <g id="_112552856">
+                            <rect id="_112566776" class="fil0 str0" x="0.360699" y="0.356959" width="7.48672" height="7.15567" rx="0.526681" ry="0.526681"/>
+                            <path id="_112566704" class="fil1" d="M5.50988 2.49975l-2.15326 1.8346 0 -0.826156c0,-0.554647 0.4568,-1.00845 1.01513,-1.00845l1.13814 0z"/>
+                            <path id="_112566632" class="fil1" d="M2.60461 5.33967l2.15326 -1.8346 0 0.826156c0,0.554647 -0.4568,1.00845 -1.01513,1.00845l-1.13814 0z"/>
+                            <path id="_112566560" class="fil1" d="M7.04124 1.19687l-2.9361 0c-1.12837,0 -2.04979,0.915374 -2.04979,2.0363l0 2.20891 0.948749 -0.808702 0 -1.36142c0,-0.624462 0.511483,-1.13255 1.14008,-1.13255l1.79017 0 1.10688 -0.94253z"/>
+                            <path id="_112566488" class="fil1" d="M1.07325 6.64256l2.9361 0c1.12837,0 2.04979,-0.915374 2.04979,-2.0363l0 -2.20891 -0.948749 0.808702 0 1.3614c0,0.624484 -0.511483,1.13257 -1.14008,1.13257l-1.79017 0 -1.10688 0.94253z"/>
+                            <path id="_112566416" class="fil1" d="M1.0856 0.112475l6.05959 0c0.534916,0 0.970254,0.43247 0.970254,0.963838l0 5.69582c0,0.531368 -0.435339,0.963838 -0.970254,0.963838l-6.05959 0c-0.534894,0 -0.970232,-0.43247 -0.970232,-0.963838l0 -5.69582c0,-0.531368 0.435339,-0.963838 0.970232,-0.963838zm0.0370976 0.537193l6.00493 0c0.238178,0 0.429492,0.190043 0.429492,0.426645l0 5.67447c0,0.236601 -0.191313,0.430543 -0.429492,0.430543l-6.00493 0c-0.238178,0 -0.429492,-0.193941 -0.429492,-0.430543l0 -5.67447c0,-0.236601 0.191313,-0.426645 0.429492,-0.426645z"/>
+                        </g>
+                        <rect class="fil0" width="8.25208" height="7.86744"/>
+                    </g>
+                </svg>
+                <h2>MP-AI10AO8</h2>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-item active" data-panel="0" data-i18n="nav_overview">📊 Обзор</div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-item" data-panel="9" data-i18n="nav_monitoring">📈 Мониторинг</div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-header" data-i18n="nav_params">⚙️ Параметры</div>
+                <div class="nav-items active">
+                    <div class="nav-item" data-panel="1" data-i18n="nav_network">📡 Сеть</div>
+                    <div class="nav-item" data-panel="2" data-i18n="nav_time">🕒 Время</div>
+                    <div class="nav-item" data-panel="3" data-i18n="nav_modbus">🔌 Modbus RTU</div>
+                    <div class="nav-item" data-panel="4" data-i18n="nav_inputs">📥 Входы</div>
+                    <div class="nav-item" data-panel="8" data-i18n="nav_outputs">📤 Выходы</div>
+                    <div class="nav-item" data-panel="5" data-i18n="nav_bacnet">🏢 BACnet/IP</div>
+                    <div class="nav-item" data-panel="6" data-i18n="nav_security">🔒 Безопасность</div>
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-item" data-panel="7" data-i18n="nav_firmware">💾 Обновление ПО</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1 data-i18n="page_title">MP-AI10AO8 Configuration</h1>
+                <div class="lang-switch">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                </div>
+            </div>
+
+            <!-- ========== ОБЗОР ========== -->
+            <div class="tab-content active" data-panel="0">
+                <h3 data-i18n="tab0_title">System Overview</h3>
+                <p class="tab-desc" data-i18n="tab0_desc">Read-only summary of all module parameters</p>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4 data-i18n="ov_module">Module</h4>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_model">Model</span><span class="info-value" id="ov-model">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_serial">Serial Number</span><span class="info-value" id="ov-serial">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_mac">MAC Address</span><span class="info-value" id="ov-mac">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_fw">Firmware</span><span class="info-value" id="ov-firmware">--</span></div>
+                    </div>
+                    <div class="info-card">
+                        <h4 data-i18n="ov_network">Network</h4>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_ip">IP Address</span><span class="info-value" id="ov-ip">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_mask">Subnet Mask</span><span class="info-value" id="ov-mask">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_gw">Gateway</span><span class="info-value" id="ov-gw">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_dns">DNS Server</span><span class="info-value" id="ov-dns">--</span></div>
+                    </div>
+                    <div class="info-card">
+                        <h4 data-i18n="ov_modbus">Modbus RTU</h4>
+                        <div style="margin-bottom:8px;font-weight:600;color:#34495e;font-size:13px" data-i18n="modbus_x2_title">Port X2 (RS485)</div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_addr">Address</span><span class="info-value" id="ov-mb-x2-addr">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_baud">Baud Rate</span><span class="info-value" id="ov-mb-x2-baud">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_parity">Parity</span><span class="info-value" id="ov-mb-x2-parity">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_stop">Stop Bits</span><span class="info-value" id="ov-mb-x2-stop">--</span></div>
+                    </div>
+                    <div class="info-card">
+                        <h4 data-i18n="ov_bacnet">BACnet/IP</h4>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_port">Port</span><span class="info-value" id="ov-bac-port">--</span></div>
+                    </div>
+                    <div class="info-card">
+                        <h4 data-i18n="ov_time">Time</h4>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_tz">Timezone</span><span class="info-value" id="ov-tz">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_ntp">NTP Server</span><span class="info-value" id="ov-ntp">--</span></div>
+                        <div class="info-row"><span class="info-label" data-i18n="ov_auto">Auto Sync</span><span class="info-value" id="ov-auto">--</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== МОНИТОРИНГ ========== -->
+            <div class="tab-content" data-panel="9">
+                <h3 data-i18n="tab_monitoring_title">Мониторинг входов и выходов</h3>
+                <p class="tab-desc" data-i18n="tab_monitoring_desc">Текущее состояние всех каналов модуля (обновление каждые 2 сек)</p>
+                <div class="time-group">
+                    <h4 data-i18n="mon_ai_title">Аналоговые входы (AI)</h4>
+                    <div class="di-table-wrapper">
+                        <table class="di-table">
+                            <thead><tr>
+                                <th style="text-align:center" data-i18n="mon_col_channel">Канал</th>
+                                <th style="text-align:center" data-i18n="mon_col_name">Описание</th>
+                                <th style="text-align:center" data-i18n="mon_col_type">Тип</th>
+                                <th style="text-align:center" data-i18n="mon_col_value">Текущее значение</th>
+                            </tr></thead>
+                            <tbody id="mon-ai-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="time-group">
+                    <h4 data-i18n="mon_ao_title">Аналоговые выходы (AO)</h4>
+                    <div class="di-table-wrapper">
+                        <table class="di-table">
+                            <thead><tr>
+                                <th style="text-align:center" data-i18n="mon_col_channel">Канал</th>
+                                <th style="text-align:center" data-i18n="mon_col_name">Описание</th>
+                                <th style="text-align:center" data-i18n="mon_col_value">Текущее значение (В)</th>
+                            </tr></thead>
+                            <tbody id="mon-ao-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== СЕТЬ ========== -->
+            <div class="tab-content" data-panel="1">
+                <h3 data-i18n="tab1_title">Network Settings</h3>
+                <p class="tab-desc" data-i18n="tab1_desc">Connection and communication parameters</p>
+                <div class="time-group">
+                    <h4 data-i18n="net_ip_assignment">IP Address Assignment</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label"><input type="radio" name="ip-mode" value="dhcp" id="net-dhcp"> <span data-i18n="net_dhcp">Get IP automatically</span></label></div>
+                        <div class="form-group"><label class="form-label"><input type="radio" name="ip-mode" value="manual" id="net-manual"> <span data-i18n="net_manual">Set IP manually</span></label></div>
+                    </div>
+                    <div class="form-row" id="ip-manual-fields">
+                        <div class="form-group"><label class="form-label" data-i18n="net_ip">IP Address</label><input type="text" class="form-input" id="net-ip"></div>
+                        <div class="form-group"><label class="form-label" data-i18n="net_mask">Subnet Mask</label><input type="text" class="form-input" id="net-mask"></div>
+                    </div>
+                    <div class="form-row" id="ip-manual-fields-2">
+                        <div class="form-group"><label class="form-label" data-i18n="net_gw">Gateway</label><input type="text" class="form-input" id="net-gw"></div>
+                        <div class="form-group"><label class="form-label" data-i18n="net_dns">DNS Server</label><input type="text" class="form-input" id="net-dns"></div>
+                    </div>
+                </div>
+                <div class="actions-bar"><button class="btn btn-primary" id="net-save-btn" data-i18n="btn_save">Save Changes</button></div>
+            </div>
+
+            <!-- ========== ВРЕМЯ ========== -->
+            <div class="tab-content" data-panel="2">
+                <h3 data-i18n="tab2_title">Time Settings</h3>
+                <p class="tab-desc" data-i18n="tab2_desc">Configure time synchronization and manual clock adjustment</p>
+                <div class="time-group">
+                    <h4 data-i18n="time_service">Time Service</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="time_tz">Timezone</label>
+                            <select class="form-select" id="time-tz">
+                                <option>UTC</option><option>UTC+1</option><option>UTC+2</option><option>UTC+3</option>
+                                <option>UTC+4</option><option>UTC+5</option><option>UTC+6</option><option>UTC+7</option>
+                                <option>UTC+8</option><option>UTC+9</option><option>UTC+10</option><option>UTC+11</option>
+                                <option>UTC+12</option><option>UTC+13</option><option>UTC+14</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label class="form-label" data-i18n="time_ntp">NTP Server</label><input type="text" class="form-input" id="time-ntp"></div>
+                    </div>
+                    <div class="checkbox-group"><input type="checkbox" id="time-auto"><label for="time-auto" data-i18n="time_auto">Automatic Time Sync</label></div>
+                </div>
+                <div class="actions-bar"><button class="btn btn-primary" id="time-save-btn" data-i18n="btn_save_service">Save Service Settings</button></div>
+                <div class="time-group" style="margin-top:15px">
+                    <h4 data-i18n="time_manual">Manual Date & Time</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label" data-i18n="time_new_date">New Date</label><input type="date" class="form-input" id="time-date"></div>
+                        <div class="form-group"><label class="form-label" data-i18n="time_new_time">New Time</label><input type="time" class="form-input" id="time-time" step="1"></div>
+                    </div>
+                    <div class="actions-bar"><button class="btn btn-primary" id="time-set-btn" data-i18n="btn_set_time">Set Time</button></div>
+                </div>
+                <div class="time-group" style="margin-top:15px">
+                    <h4 data-i18n="time_current">Module Current Time</h4>
+                    <div id="current-time-display" class="time-synced" style="font-size:20px;font-weight:bold;margin:10px 0">
+                        <span id="current-date">--</span> <span id="current-time">--</span>
+                    </div>
+                    <div class="actions-bar"><button class="btn btn-secondary" id="time-sync-btn" data-i18n="btn_sync_pc" disabled>Synchronize with PC</button></div>
+                </div>
+            </div>
+
+            <!-- ========== MODBUS RTU (только X2) ========== -->
+            <div class="tab-content" data-panel="3">
+                <h3 data-i18n="tab3_title">Modbus RTU Settings</h3>
+                <p class="tab-desc" data-i18n="tab3_desc">Configure serial communication parameters for Modbus RTU port</p>
+                <div class="time-group">
+                    <h4 data-i18n="modbus_x2_title">Port X2 (RS485)</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label" data-i18n="mb_addr">Address</label><input type="number" class="form-input" id="mb-x2-addr" min="0" max="254"></div>
+                        <div class="form-group"><label class="form-label" data-i18n="mb_baud">Baud Rate</label>
+                            <select class="form-select" id="mb-x2-baud"><option>2400</option><option>4800</option><option>9600</option><option>19200</option><option>38400</option><option>57600</option><option>115200</option></select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label" data-i18n="mb_parity">Parity</label><select class="form-select" id="mb-x2-parity"><option>None</option><option>Even</option><option>Odd</option></select></div>
+                        <div class="form-group"><label class="form-label" data-i18n="mb_stop">Stop Bits</label><select class="form-select" id="mb-x2-stop"><option>1</option><option>2</option></select></div>
+                    </div>
+                    <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="mb_delay">Response Delay (ms)</label><input type="number" class="form-input" id="mb-x2-delay" min="0" max="20"></div></div>
+                </div>
+                <div class="actions-bar"><button class="btn btn-primary" id="mb-save-btn" data-i18n="btn_save">Save Changes</button></div>
+            </div>
+
+            <!-- ========== ВХОДЫ (только AI) ========== -->
+            <div class="tab-content" data-panel="4">
+                <h3 data-i18n="tab_inputs_title">Inputs Configuration</h3>
+                <p class="tab-desc" data-i18n="tab_inputs_desc">Configure analog inputs (0-10V / 0-20mA / 4-20mA)</p>
+                <div class="time-group">
+                    <h4 data-i18n="ai_v_table_title">Sensors 0-10V / 0-20mA / 4-20mA</h4>
+                    <div class="di-table-wrapper">
+                        <table class="di-table">
+                            <thead><tr>
+                                <th style="text-align:center" data-i18n="ai_col_channel">Input</th>
+                                <th style="text-align:center" data-i18n="ai_col_desc">Description</th>
+                                <th style="text-align:center" data-i18n="ai_col_type">Type</th>
+                                <th style="text-align:center" data-i18n="ai_col_init">Value at 0V/0mA/4mA</th>
+                                <th style="text-align:center" data-i18n="ai_col_end">Value at 10V/20mA</th>
+                                <th style="text-align:center" data-i18n="ai_col_min_v">MIN allowed</th>
+                                <th style="text-align:center" data-i18n="ai_col_max_v">MAX allowed</th>
+                                <th style="text-align:center" data-i18n="ai_col_correct_v">Correction</th>
+                            </tr></thead>
+                            <tbody id="ai-v-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="actions-bar">
+                    <button class="btn btn-primary" id="inputs-save-btn" data-i18n="btn_save">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- ========== ВЫХОДЫ (только AO) ========== -->
+            <div class="tab-content" data-panel="8">
+                <h3 data-i18n="tab_outputs_title">Outputs</h3>
+                <p class="tab-desc" data-i18n="tab_outputs_desc">Configure and control analog outputs</p>
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-subtab="settings" data-i18n="tab_outputs_settings">Outputs</button>
+                    <button class="sub-tab" data-subtab="control" data-i18n="tab_outputs_control">Outputs Control</button>
+                </div>
+                <div class="sub-tab-content active" data-subtab-content="settings">
+                    <div class="time-group">
+                        <h4 data-i18n="outputs_modbus_check">Check Modbus TCP/RTU Connection</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="outputs_modbus_interface">Interface:</label>
+                                <select class="form-select" id="out-glob-modbus-iface">
+                                    <option value="RS485">RS485</option>
+                                    <option value="Ethernet">Ethernet</option>
+                                    <option value="RS485+Ethernet" selected>RS485+Ethernet</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="outputs_modbus_timeout">Connection Timeout (sec):</label>
+                                <input type="number" class="form-input" id="out-glob-modbus-timeout" min="0" max="65535" value="0">
+                                <small class="form-hint" data-i18n="outputs_timeout_hint">(0 - do not check)</small>
+                            </div>
+                        </div>
+                        <h4 data-i18n="outputs_bacnet_check">Check BACnet/IP Connection</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="outputs_bacnet_timeout">Connection Timeout (sec):</label>
+                                <input type="number" class="form-input" id="out-glob-bacnet-timeout" min="0" max="65535" value="0">
+                                <small class="form-hint" data-i18n="outputs_timeout_hint">(0 - do not check)</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="time-group">
+                        <h4 data-i18n="outputs_ao_title">Analog Outputs</h4>
+                        <div class="di-table-wrapper">
+                            <table class="di-table">
+                                <thead><tr>
+                                    <th style="text-align:center" data-i18n="outputs_ao_col_output">Channel</th>
+                                    <th style="text-align:center" data-i18n="outputs_ao_col_desc">Description</th>
+                                    <th style="text-align:center" data-i18n="outputs_ao_col_start">Start value</th>
+                                    <th style="text-align:center" data-i18n="outputs_ao_col_lost">Lost connection value</th>
+                                    <th style="text-align:center" data-i18n="outputs_ao_col_check">Check connection</th>
+                                </tr></thead>
+                                <tbody id="ao-outputs-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="actions-bar"><button class="btn btn-primary" id="outputs-save-btn" data-i18n="btn_save">Save Changes</button></div>
+                </div>
+                <div class="sub-tab-content" data-subtab-content="control">
+                    <div class="time-group">
+                        <h4 data-i18n="outputs_control_ao_title">Analog Outputs Control</h4>
+                        <div class="di-table-wrapper">
+                            <table class="di-table">
+                                <thead><tr>
+                                    <th style="text-align:center" data-i18n="outputs_control_col_channel">Channel</th>
+                                    <th style="text-align:center" data-i18n="outputs_control_col_desc">Description</th>
+                                    <th style="text-align:center" data-i18n="outputs_control_col_current">Current value (V)</th>
+                                    <th style="text-align:center" data-i18n="outputs_control_col_new">New value (V)</th>
+                                    <th style="text-align:center" data-i18n="outputs_control_col_action">Action</th>
+                                </tr></thead>
+                                <tbody id="ao-control-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== BACnet/IP ========== -->
+            <div class="tab-content" data-panel="5">
+                <h3 data-i18n="tab5_title">BACnet/IP Settings</h3>
+                <p class="tab-desc" data-i18n="tab5_desc">Configure BACnet/IP communication parameters</p>
+                <div class="time-group">
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label" data-i18n="bac_port">Port</label><input type="number" class="form-input" id="bac-port" min="0" max="65535"></div>
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="bac_pass">Password</label>
+                            <div style="position:relative">
+                                <input type="password" class="form-input" id="bac-pass" maxlength="19" style="padding-right:40px">
+                                <button type="button" id="bac-toggle-pass" class="toggle-password-btn" title="Show/Hide">
+                                    <svg id="bac-eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="actions-bar"><button class="btn btn-primary" id="bac-save-btn" data-i18n="btn_save">Save Changes</button></div>
+            </div>
+
+            <!-- ========== БЕЗОПАСНОСТЬ ========== -->
+            <div class="tab-content" data-panel="6">
+                <h3 data-i18n="tab6_title">Security Settings</h3>
+                <p class="tab-desc" data-i18n="tab6_desc">Change module access password</p>
+                <div class="time-group">
+                    <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="sec_new_pass">New Password</label><input type="password" class="form-input" id="sec-new-pass" maxlength="15"></div></div>
+                    <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="sec_conf_pass">Confirm Password</label><input type="password" class="form-input" id="sec-conf-pass" maxlength="15"></div></div>
+                </div>
+                <div class="actions-bar"><button class="btn btn-primary" id="sec-save-btn" data-i18n="btn_save">Save Changes</button></div>
+            </div>
+
+            <!-- ========== ОБНОВЛЕНИЕ ПО ========== -->
+            <div class="tab-content" data-panel="7">
+                <h3 data-i18n="tab7_title">Firmware Update</h3>
+                <p class="tab-desc" data-i18n="tab7_desc">Update module firmware from file</p>
+                <div class="time-group">
+                    <h4 data-i18n="fw_file_title">Update from File</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="fw_file">Firmware File (.cpt)</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="fw-file-input" accept=".cpt" style="display:none">
+                                <label for="fw-file-input" class="file-input-label" id="fw-file-label">
+                                    <span class="file-icon">📁</span>
+                                    <span class="file-name" id="fw-file-name" data-i18n="fw_select_file">Select file...</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress-bar"><div class="progress-fill" id="fw-progress"></div></div>
+                    <div style="margin-top:10px;font-size:13px;color:#7f8c8d" id="fw-progress-text">0%</div>
+                </div>
+                <div class="actions-bar">
+                    <button class="btn btn-primary" id="fw-upload-btn" data-i18n="btn_upload" disabled>Upload & Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <h3 data-i18n="modal_warning_title">⚠️ Warning</h3>
+            <p data-i18n="net_warning_text">Changing IP settings may lead to loss of connection with the module. The module will be automatically rebooted. You will need to log in again with the new network settings!</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="modal-cancel" data-i18n="btn_cancel">Cancel</button>
+                <button class="btn btn-danger" id="modal-confirm" data-i18n="btn_confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+    
+    <div class="saving-overlay" id="saving-overlay">
+        <div class="saving-spinner"></div>
+        <div class="saving-text" id="saving-text">Сохранение...</div>
+    </div>
+    
+    <div class="reboot-overlay" id="reboot-overlay">
+        <div data-i18n="reboot_waiting">Ожидание обновления ПО</div>
+        <div><span data-i18n="reboot_in">Перезагрузка через</span> <span id="reboot-counter">10</span> <span data-i18n="reboot_sec">сек...</span></div>
+    </div>
+    
+    <div class="login-overlay" id="login-overlay">
+        <div class="login-box">
+            <div class="login-header">
+                <svg class="module-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8.25208 7.86744" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd;">
+                    <defs>
+                        <style type="text/css">
+                            .str0 {stroke:#1F1A17;stroke-width:0.0166874}
+                            .fil0 {fill:none}
+                            .fil1 {fill:#0E538F}
+                        </style>
+                    </defs>
+                    <g id="Layer_x0020_1">
+                        <g id="_112552856">
+                            <rect id="_112566776" class="fil0 str0" x="0.360699" y="0.356959" width="7.48672" height="7.15567" rx="0.526681" ry="0.526681"/>
+                            <path id="_112566704" class="fil1" d="M5.50988 2.49975l-2.15326 1.8346 0 -0.826156c0,-0.554647 0.4568,-1.00845 1.01513,-1.00845l1.13814 0z"/>
+                            <path id="_112566632" class="fil1" d="M2.60461 5.33967l2.15326 -1.8346 0 0.826156c0,0.554647 -0.4568,1.00845 -1.01513,1.00845l-1.13814 0z"/>
+                            <path id="_112566560" class="fil1" d="M7.04124 1.19687l-2.9361 0c-1.12837,0 -2.04979,0.915374 -2.04979,2.0363l0 2.20891 0.948749 -0.808702 0 -1.36142c0,-0.624462 0.511483,-1.13255 1.14008,-1.13255l1.79017 0 1.10688 -0.94253z"/>
+                            <path id="_112566488" class="fil1" d="M1.07325 6.64256l2.9361 0c1.12837,0 2.04979,-0.915374 2.04979,-2.0363l0 -2.20891 -0.948749 0.808702 0 1.3614c0,0.624484 -0.511483,1.13257 -1.14008,1.13257l-1.79017 0 -1.10688 0.94253z"/>
+                            <path id="_112566416" class="fil1" d="M1.0856 0.112475l6.05959 0c0.534916,0 0.970254,0.43247 0.970254,0.963838l0 5.69582c0,0.531368 -0.435339,0.963838 -0.970254,0.963838l-6.05959 0c-0.534894,0 -0.970232,-0.43247 -0.970232,-0.963838l0 -5.69582c0,-0.531368 0.435339,-0.963838 0.970232,-0.963838zm0.0370976 0.537193l6.00493 0c0.238178,0 0.429492,0.190043 0.429492,0.426645l0 5.67447c0,0.236601 -0.191313,0.430543 -0.429492,0.430543l-6.00493 0c-0.238178,0 -0.429492,-0.193941 -0.429492,-0.430543l0 -5.67447c0,-0.236601 0.191313,-0.426645 0.429492,-0.426645z"/>
+                        </g>
+                        <rect class="fil0" width="8.25208" height="7.86744"/>
+                    </g>
+                </svg>
+                <h2 data-i18n="login_title">Module Authentication</h2>
+            </div>
+            <p data-i18n="login_desc">Enter password to access configuration parameters</p>
+            <input type="password" id="login-password" placeholder="Password">
+            <button class="btn btn-primary" id="login-btn" data-i18n="btn_login" style="width:100%">Login</button>
+        </div>
+    </div>
+
+    <script>
+    var MODULE_BASE_URL = '';
+    var SessionToken = null;
+    
+    // Задержка ожидания записи данных контроллером во flash-память (мс)
+    var FLASH_WRITE_DELAY = 1000;
+
+    function invalidateSession() {
+        SessionToken = null;
+        stopMonitoring();
+        stopOutputsPolling();
+        stopTimeUpdating();
+        stopFirmwarePolling();
+        
+        showNotification(
+            currentLang === 'ru' 
+                ? '🔒 Сессия недействительна. Войдите заново' 
+                : '🔒 Session invalidated. Please log in again', 
+            true
+        );
+        
+        var loginOverlay = document.getElementById('login-overlay');
+        if (loginOverlay) loginOverlay.style.display = 'flex';
+        
+        var loginInput = document.getElementById('login-password');
+        if (loginInput) loginInput.value = '';
+    }
+
+    function getPCLocalTimestamp() {
+        var now = new Date();
+        return Math.floor(now.getTime() / 1000) - now.getTimezoneOffset() * 60;
+    }
+
+    async function apiFetch(endpoint, options) {
+        options = options || {};
+        var method = (options.method || 'GET').toUpperCase();
+        
+        if (method === 'GET') {
+            endpoint += (endpoint.includes('?') ? '&' : '?') + '_t=' + Date.now();
+        }
+        
+        var headers = options.headers || {};
+        headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+        headers['Pragma'] = 'no-cache';
+        headers['Expires'] = '0';
+        
+        if (SessionToken) {
+            headers['Authorization'] = 'Basic ' + SessionToken;
+        }
+        
+        options.headers = headers;
+        
+        console.log(
+            '%c[API ' + method + '] ' + endpoint,
+            'color:#fff;background:#3498db;padding:2px 8px;border-radius:3px;font-weight:bold'
+        );
+        
+        var response = await fetch(MODULE_BASE_URL + endpoint, options);
+        
+        if (method === 'GET') {
+            try {
+                var clonedResponse = response.clone();
+                var data = await clonedResponse.json();
+                
+                console.log(
+                    '%c[API RESPONSE] ' + endpoint,
+                    'color:#fff;background:#27ae60;padding:2px 8px;border-radius:3px;font-weight:bold',
+                    '\n',
+                    JSON.stringify(data, null, 2)
+                );
+            } catch (e) {
+                console.warn('[API RESPONSE] Не удалось распарсить JSON для:', endpoint, e);
+            }
+        }
+        
+        if ((response.status === 401 || response.status === 403) && method === 'GET') {
+            invalidateSession();
+            throw new Error('Session invalidated');
+        }
+        
+        return response;
+    }
+
+    function logSave(endpoint, payload) {
+        console.log(
+            '%c[SAVE] ' + endpoint,
+            'color:#fff;background:#2980b9;padding:2px 8px;border-radius:3px;font-weight:bold',
+            '\n',
+            JSON.stringify(payload, null, 2)
+        );
+    }
+
+    function showNotification(msg, isError) {
+        var el = document.getElementById('notification');
+        el.textContent = msg;
+        el.classList.toggle('error', !!isError);
+        el.classList.add('active');
+        setTimeout(function () {
+            el.classList.remove('active');
+        }, 3000);
+    }
+
+    function isValidIPv4(ip) {
+        if (!ip) return false;
+        var parts = ip.split('.');
+        if (parts.length !== 4) return false;
+        for (var i = 0; i < 4; i++) {
+            var num = parseInt(parts[i], 10);
+            if (isNaN(num) || num < 0 || num > 255) return false;
+            if (parts[i] !== num.toString()) return false;
+        }
+        return true;
+    }
+
+    function isValidNTP(server) {
+        if (!server) return true;
+        var domainRegex = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+        var ipRegex = /^(?:\d{1,3}\.){3}\d{1,3}$/;
+        return domainRegex.test(server) || ipRegex.test(server);
+    }
+
+    function formatErr(key, params) {
+        var msg = translations[currentLang][key] || key;
+        if (params) {
+            Object.keys(params).forEach(function(k) {
+                msg = msg.replace('{' + k + '}', params[k]);
+            });
+        }
+        return msg;
+    }
+
+    function delay(ms) {
+        return new Promise(function(resolve) {
+            setTimeout(resolve, ms);
+        });
+    }
+
+    function lockSaveBtn(btnId, text) {
+        var btn = document.getElementById(btnId);
+        if (!btn) return '';
+        var originalText = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = text;
+        return originalText;
+    }
+
+    function unlockSaveBtn(btnId, originalText) {
+        var btn = document.getElementById(btnId);
+        if (!btn) return;
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+
+    function showSavingOverlay(text) {
+        var overlay = document.getElementById('saving-overlay');
+        var textEl = document.getElementById('saving-text');
+        if (textEl) textEl.textContent = text;
+        if (overlay) overlay.classList.add('active');
+    }
+
+    function hideSavingOverlay() {
+        var overlay = document.getElementById('saving-overlay');
+        if (overlay) overlay.classList.remove('active');
+    }
+
+    // Валидация файла прошивки для MP-AI10AO8
+    async function validateFirmwareFile(file) {
+        if (!file.name.toLowerCase().endsWith('.cpt')) return false;
+        // Размер файла для MP-AI10AO8 (уточните актуальный размер!)
+        if (file.size !== 1048595) return false;
+        try {
+            var buf = await file.slice(0, 14).arrayBuffer();
+            var str = String.fromCharCode.apply(null, new Uint8Array(buf));
+            // Сигнатура для MP-AI10AO8
+            if (str !== 'MP-AI10AO8_GD:') return false;
+        } catch (e) {
+            console.error('File read error:', e);
+            return false;
+        }
+        return true;
+    }
+
+    // Валидация аналоговых входов (только V-тип)
+    function validateAnalogInputs() {
+        var isValid = true;
+        var errors = [];
+
+        document.querySelectorAll('tr[data-ch]').forEach(function(row) {
+            var ch = row.getAttribute('data-ch');
+            var typeSelect = row.querySelector('.ai-type-select');
+            if (!typeSelect) return;
+
+            var initInput = row.querySelector('[data-field="initPoint"]');
+            var endInput = row.querySelector('[data-field="endPoint"]');
+            var minInput = row.querySelector('[data-field="min"]');
+            var maxInput = row.querySelector('[data-field="max"]');
+            var corrInput = row.querySelector('[data-field="correct"]');
+
+            var initVal = parseFloat(initInput?.value);
+            var endVal = parseFloat(endInput?.value);
+            var minVal = parseFloat(minInput?.value);
+            var maxVal = parseFloat(maxInput?.value);
+            var corrVal = parseFloat(corrInput?.value);
+
+            if (!isNaN(initVal) && !isNaN(endVal)) {
+                if (initVal < -99 || initVal > endVal) {
+                    initInput.classList.add('field-invalid');
+                    errors.push(formatErr('err_ai_init_range', { ch: ch, max: endVal }));
+                    isValid = false;
+                } else {
+                    initInput.classList.remove('field-invalid');
+                }
+            }
+
+            if (!isNaN(initVal) && !isNaN(endVal)) {
+                if (endVal < initVal || endVal > 999) {
+                    endInput.classList.add('field-invalid');
+                    errors.push(formatErr('err_ai_end_range', { ch: ch, min: initVal }));
+                    isValid = false;
+                } else {
+                    endInput.classList.remove('field-invalid');
+                }
+            }
+
+            if (!isNaN(minVal) && !isNaN(maxVal)) {
+                if (minVal < -99 || minVal > maxVal) {
+                    minInput.classList.add('field-invalid');
+                    errors.push(formatErr('err_ai_min_range', { ch: ch, max: maxVal }));
+                    isValid = false;
+                } else {
+                    minInput.classList.remove('field-invalid');
+                }
+            }
+
+            if (!isNaN(minVal) && !isNaN(maxVal)) {
+                if (maxVal < minVal || maxVal > 999) {
+                    maxInput.classList.add('field-invalid');
+                    errors.push(formatErr('err_ai_max_range', { ch: ch, min: minVal }));
+                    isValid = false;
+                } else {
+                    maxInput.classList.remove('field-invalid');
+                }
+            }
+
+            if (!isNaN(corrVal)) {
+                if (corrVal < -50 || corrVal > 50) {
+                    corrInput.classList.add('field-invalid');
+                    errors.push(formatErr('err_ai_corr_v_range', { ch: ch }));
+                    isValid = false;
+                } else {
+                    corrInput.classList.remove('field-invalid');
+                }
+            }
+        });
+
+        if (!isValid && errors.length > 0) {
+            showNotification(errors[0], true);
+        }
+
+        return isValid;
+    }
+
+    var translations = {
+        en: {
+            login_title: 'Module Authentication',
+            login_desc: 'Enter password to access configuration parameters',
+            btn_login: 'Login',
+            nav_overview: '📊 Overview',
+            nav_params: '⚙️ Parameters',
+            nav_network: '📡 Network',
+            nav_time: '🕒 Time',
+            nav_modbus: '🔌 Modbus RTU',
+            nav_inputs: '📥 Inputs',
+            nav_outputs: '📤 Outputs',
+            nav_monitoring: '📈 Monitoring',
+            nav_bacnet: '🏢 BACnet/IP',
+            nav_security: '🔒 Security',
+            nav_firmware: '💾 Firmware Update',
+            page_title: 'MP-AI10AO8 Configuration',
+            login_error: 'Invalid password',
+            connection_error: 'Connection error',
+            tab0_title: 'System Overview',
+            tab0_desc: 'Read-only summary of all module parameters',
+            ov_module: 'Module', ov_network: 'Network', ov_modbus: 'Modbus RTU', ov_bacnet: 'BACnet/IP', ov_time: 'Time',
+            ov_model: 'Model', ov_serial: 'Serial Number', ov_mac: 'MAC Address', ov_fw: 'Firmware',
+            ov_ip: 'IP Address', ov_mask: 'Subnet Mask', ov_gw: 'Gateway', ov_dns: 'DNS Server',
+            ov_addr: 'Address', ov_baud: 'Baud Rate', ov_parity: 'Parity', ov_stop: 'Stop Bits',
+            ov_port: 'Port', ov_tz: 'Timezone', ov_ntp: 'NTP Server', ov_auto: 'Auto Sync',
+            tab1_title: 'Network Settings', tab1_desc: 'Connection and communication parameters',
+            net_ip_assignment: 'IP Address Assignment', net_dhcp: 'Get IP automatically', net_manual: 'Set IP manually',
+            net_ip: 'IP Address', net_mask: 'Subnet Mask', net_gw: 'Gateway', net_dns: 'DNS Server',
+            net_invalid_ip: 'Invalid IP address format',
+            net_warning_text: 'Changing IP settings may lead to loss of connection with the module. The module will be automatically rebooted. You will need to log in again with the new network settings!',
+            tab2_title: 'Time Settings', tab2_desc: 'Configure time synchronization and manual clock adjustment',
+            time_service: 'Time Service', time_tz: 'Timezone', time_ntp: 'NTP Server', time_auto: 'Automatic Time Sync',
+            time_manual: 'Manual Date & Time', time_new_date: 'New Date', time_new_time: 'New Time', time_current: 'Module Current Time',
+            time_invalid_ntp: 'Invalid NTP server format', time_invalid_dt: 'Invalid date or time format',
+            tab3_title: 'Modbus RTU Settings', tab3_desc: 'Configure serial communication parameters for Modbus RTU port',
+            modbus_x2_title: 'Port X2 (RS485)',
+            mb_addr: 'Address', mb_baud: 'Baud Rate', mb_parity: 'Parity', mb_stop: 'Stop Bits', mb_delay: 'Response Delay (ms)',
+            tab_inputs_title: 'Inputs Configuration', tab_inputs_desc: 'Configure analog inputs (0-10V / 0-20mA / 4-20mA)',
+            ai_v_table_title: 'Sensors 0-10V / 0-20mA / 4-20mA',
+            ai_col_channel: 'Input', ai_col_desc: 'Description', ai_col_type: 'Type',
+            ai_col_init: 'Value at 0V/0mA/4mA', ai_col_end: 'Value at 10V/20mA',
+            ai_col_min_v: 'MIN allowed', ai_col_max_v: 'MAX allowed', ai_col_correct_v: 'Correction',
+            tab_outputs_title: 'Outputs', tab_outputs_desc: 'Configure and control analog outputs',
+            tab_outputs_settings: 'Outputs', tab_outputs_control: 'Outputs Control',
+            outputs_modbus_check: 'Check Modbus TCP/RTU Connection', outputs_modbus_interface: 'Interface:',
+            outputs_modbus_timeout: 'Connection Timeout (sec):', outputs_bacnet_check: 'Check BACnet/IP Connection',
+            outputs_bacnet_timeout: 'Connection Timeout (sec):', outputs_timeout_hint: '(0 - do not check)',
+            outputs_ao_title: 'Analog Outputs', outputs_ao_col_output: 'Channel', outputs_ao_col_desc: 'Description',
+            outputs_ao_col_start: 'Start value', outputs_ao_col_lost: 'Lost connection value', outputs_ao_col_check: 'Check connection',
+            outputs_control_ao_title: 'Analog Outputs Control',
+            outputs_control_col_channel: 'Channel', outputs_control_col_desc: 'Description',
+            outputs_control_col_current: 'Current value (V)', outputs_control_col_new: 'New value (V)', outputs_control_col_action: 'Action',
+            tab_monitoring_title: 'Inputs and Outputs Monitoring',
+            tab_monitoring_desc: 'Current state of all module channels (updates every 2 sec)',
+            mon_ai_title: 'Analog Inputs (AI)', mon_ao_title: 'Analog Outputs (AO)',
+            mon_col_channel: 'Channel', mon_col_name: 'Description', mon_col_type: 'Type',
+            mon_col_value: 'Current Value',
+            tab5_title: 'BACnet/IP Settings', tab5_desc: 'Configure BACnet/IP communication parameters',
+            bac_port: 'Port', bac_pass: 'Password',
+            tab6_title: 'Security Settings', tab6_desc: 'Change module access password',
+            sec_new_pass: 'New Password', sec_conf_pass: 'Confirm Password',
+            tab7_title: 'Firmware Update', tab7_desc: 'Update module firmware from file',
+            fw_file_title: 'Update from File', fw_file: 'Firmware File (.cpt)',
+            btn_save: 'Save Changes', btn_save_service: 'Save Service Settings', btn_set_time: 'Set Time',
+            btn_sync_pc: 'Synchronize with PC', btn_upload: 'Upload & Update', btn_set: 'Set',
+            btn_reboot: 'Reboot Module', btn_cancel: 'Cancel', btn_confirm: 'Confirm',
+            modal_warning_title: '⚠️ Warning',
+            msg_saved: '✓ Settings saved successfully',
+            msg_save_error: '✗ Save error',
+            passwords_mismatch: 'Passwords do not match',
+            fw_upload_success: '✓ Firmware uploaded successfully',
+            fw_upload_error: 'Firmware upload error',
+            fw_select_file: 'Select file...',
+            fw_file_invalid: 'The file is not suitable for upload',
+            fw_file_size_bytes: 'bytes',
+            fw_reloading: '✓ Firmware updated. Reloading interface...',
+            saving_text: 'Saving settings...',
+            saving_btn_text: 'Saving...',
+            err_ai_init_range: 'AI{ch}: Value at 0V/0mA/4mA must be between -99 and {max}',
+            err_ai_end_range: 'AI{ch}: Value at 10V/20mA must be between {min} and 999',
+            err_ai_min_range: 'AI{ch}: MIN allowed must be between -99 and {max}',
+            err_ai_max_range: 'AI{ch}: MAX allowed must be between {min} and 999',
+            err_ai_corr_v_range: 'AI{ch}: Correction must be between -50 and 50'
+        },
+        ru: {
+            login_title: 'Аутентификация модуля',
+            login_desc: 'Введите пароль для доступа к параметрам конфигурации',
+            btn_login: 'Войти',
+            nav_overview: '📊 Обзор', nav_params: '⚙️ Параметры', nav_network: '📡 Сеть',
+            nav_time: '🕒 Время', nav_modbus: '🔌 Modbus RTU', nav_inputs: '📥 Входы',
+            nav_outputs: '📤 Выходы', nav_monitoring: '📈 Мониторинг',
+            nav_bacnet: '🏢 BACnet/IP', nav_security: '🔒 Безопасность', nav_firmware: '💾 Обновление ПО',
+            page_title: 'Конфигурация MP-AI10AO8',
+            login_error: 'Неверный пароль',
+            connection_error: 'Ошибка подключения',
+            tab0_title: 'Обзор системы', tab0_desc: 'Сводка всех параметров модуля (только для чтения)',
+            ov_module: 'Модуль', ov_network: 'Сеть', ov_modbus: 'Modbus RTU', ov_bacnet: 'BACnet/IP', ov_time: 'Время',
+            ov_model: 'Модель', ov_serial: 'Серийный номер', ov_mac: 'MAC-адрес', ov_fw: 'Прошивка',
+            ov_ip: 'IP-адрес', ov_mask: 'Маска подсети', ov_gw: 'Шлюз', ov_dns: 'DNS-сервер',
+            ov_addr: 'Адрес', ov_baud: 'Скорость', ov_parity: 'Чётность', ov_stop: 'Стоп-биты',
+            ov_port: 'Порт', ov_tz: 'Часовой пояс', ov_ntp: 'NTP-сервер', ov_auto: 'Автосинхр.',
+            tab1_title: 'Настройки сети', tab1_desc: 'Параметры подключения и связи',
+            net_ip_assignment: 'Назначение IP-адреса', net_dhcp: 'Получать автоматически', net_manual: 'Указать вручную',
+            net_ip: 'IP-адрес', net_mask: 'Маска подсети', net_gw: 'Шлюз', net_dns: 'DNS-сервер',
+            net_invalid_ip: 'Неверный формат IP-адреса',
+            net_warning_text: 'Изменение настроек IP может привести к потере соединения с модулем. Модуль будет автоматически перезагружен. Вы должны снова войти в систему с новыми сетевыми настройками!',
+            tab2_title: 'Настройки времени', tab2_desc: 'Синхронизация времени и ручная настройка часов',
+            time_service: 'Служба времени', time_tz: 'Часовой пояс', time_ntp: 'NTP-сервер', time_auto: 'Автоматическая синхронизация',
+            time_manual: 'Ручная установка даты и времени', time_new_date: 'Новая дата', time_new_time: 'Новое время', time_current: 'Текущее время модуля',
+            time_invalid_ntp: 'Неверный формат NTP-сервера', time_invalid_dt: 'Неверный формат даты или времени',
+            tab3_title: 'Настройки Modbus RTU', tab3_desc: 'Параметры последовательной связи для порта Modbus RTU',
+            modbus_x2_title: 'Порт X2 (RS485)',
+            mb_addr: 'Адрес', mb_baud: 'Скорость', mb_parity: 'Чётность', mb_stop: 'Стоп-биты', mb_delay: 'Задержка ответа (мс)',
+            tab_inputs_title: 'Настройка входов', tab_inputs_desc: 'Настройка аналоговых входов (0-10V / 0-20mA / 4-20mA)',
+            ai_v_table_title: 'Датчики 0-10V / 0-20mA / 4-20mA',
+            ai_col_channel: 'Вход', ai_col_desc: 'Описание', ai_col_type: 'Тип',
+            ai_col_init: 'Значение при 0V/0mA/4mA', ai_col_end: 'Значение при 10V/20mA',
+            ai_col_min_v: 'MIN допустимое', ai_col_max_v: 'MAX допустимое', ai_col_correct_v: 'Коррекция',
+            tab_outputs_title: 'Выходы', tab_outputs_desc: 'Настройка и управление аналоговыми выходами',
+            tab_outputs_settings: 'Выходы', tab_outputs_control: 'Управление выходами',
+            outputs_modbus_check: 'Проверять связь Modbus TCP/RTU', outputs_modbus_interface: 'Интерфейс:',
+            outputs_modbus_timeout: 'Время отсутствия связи (сек):', outputs_bacnet_check: 'Проверять связь BACnet/IP',
+            outputs_bacnet_timeout: 'Время отсутствия связи (сек):', outputs_timeout_hint: '(0 - не проверять)',
+            outputs_ao_title: 'Аналоговые выходы', outputs_ao_col_output: 'Канал', outputs_ao_col_desc: 'Описание',
+            outputs_ao_col_start: 'Значение при старте', outputs_ao_col_lost: 'Значение при потере связи', outputs_ao_col_check: 'Проверять связь',
+            outputs_control_ao_title: 'Управление аналоговыми выходами',
+            outputs_control_col_channel: 'Канал', outputs_control_col_desc: 'Описание',
+            outputs_control_col_current: 'Текущее значение (В)', outputs_control_col_new: 'Новое значение (В)', outputs_control_col_action: 'Действие',
+            tab_monitoring_title: 'Мониторинг входов и выходов',
+            tab_monitoring_desc: 'Текущее состояние всех каналов модуля (обновление каждые 2 сек)',
+            mon_ai_title: 'Аналоговые входы (AI)', mon_ao_title: 'Аналоговые выходы (AO)',
+            mon_col_channel: 'Канал', mon_col_name: 'Описание', mon_col_type: 'Тип',
+            mon_col_value: 'Текущее значение',
+            tab5_title: 'Настройки BACnet/IP', tab5_desc: 'Параметры связи BACnet/IP',
+            bac_port: 'Порт', bac_pass: 'Пароль',
+            tab6_title: 'Настройки безопасности', tab6_desc: 'Изменение пароля доступа к модулю',
+            sec_new_pass: 'Новый пароль', sec_conf_pass: 'Подтверждение пароля',
+            tab7_title: 'Обновление прошивки', tab7_desc: 'Обновление прошивки модуля из файла',
+            fw_file_title: 'Обновление из файла', fw_file: 'Файл прошивки (.cpt)',
+            btn_save: 'Сохранить изменения', btn_save_service: 'Сохранить настройки службы', btn_set_time: 'Установить время',
+            btn_sync_pc: 'Синхронизировать с ПК', btn_upload: 'Загрузить и обновить', btn_set: 'Установить',
+            btn_reboot: 'Перезагрузить модуль', btn_cancel: 'Отмена', btn_confirm: 'Подтвердить',
+            modal_warning_title: '⚠️ Предупреждение',
+            msg_saved: '✓ Настройки успешно сохранены',
+            msg_save_error: '✗ Ошибка сохранения',
+            passwords_mismatch: 'Пароли не совпадают',
+            fw_upload_success: '✓ Прошивка успешно загружена',
+            fw_upload_error: 'Ошибка загрузки прошивки',
+            fw_select_file: 'Выберите файл...',
+            fw_file_invalid: 'Файл не подходит для загрузки',
+            fw_file_size_bytes: 'байт',
+            fw_reloading: '✓ Прошивка обновлена. Перезагрузка интерфейса...',
+            saving_text: 'Сохранение настроек...',
+            saving_btn_text: 'Сохранение...',
+            err_ai_init_range: 'AI{ch}: Значение при 0V/0mA/4mA должно быть от -99 до {max}',
+            err_ai_end_range: 'AI{ch}: Значение при 10V/20mA должно быть от {min} до 999',
+            err_ai_min_range: 'AI{ch}: MIN допустимое должно быть от -99 до {max}',
+            err_ai_max_range: 'AI{ch}: MAX допустимое должно быть от {min} до 999',
+            err_ai_corr_v_range: 'AI{ch}: Коррекция должна быть от -50 до 50'
+        }
+    };
+
+    var currentLang = 'en';
+    var cfgSystem, cfgNetwork, cfgTime, cfgModbus;
+    var cfgInputs, cfgOutputs, cfgBacnet, cfgCurrentState;
+    var outputsPollingTimer = null;
+    var monitoringTimer = null;
+    var currentTimeTimer = null;
+    var firmwarePollingTimer = null;
+    var rebootCountdownTimer = null;
+    var MONITORING_INTERVAL = 2000;
+
+    // Количество каналов для MP-AI10AO8
+    var AI_CHANNEL_COUNT = 10;
+    var AO_CHANNEL_COUNT = 8;
+
+    var vTypeLabels = ['0-10V', '0-20mA', '4-20mA'];
+
+    function applyTranslations() {
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+            var key = el.getAttribute('data-i18n');
+            if (translations[currentLang][key]) {
+                el.textContent = translations[currentLang][key];
+            }
+        });
+    }
+
+    function updateNetworkFieldsVisibility() {
+        var isManual = document.getElementById('net-manual').checked;
+        var fields1 = document.getElementById('ip-manual-fields');
+        var fields2 = document.getElementById('ip-manual-fields-2');
+        if (fields1) fields1.style.display = isManual ? 'flex' : 'none';
+        if (fields2) fields2.style.display = isManual ? 'flex' : 'none';
+    }
+
+    async function updateModuleCurrentTime() {
+        try {
+            var res = await apiFetch('/time/current');
+            var data = await res.json();
+            
+            var controllerTime = data.timestamp;
+            var pcTime = getPCLocalTimestamp();
+            var diffSec = Math.abs(controllerTime - pcTime);
+
+            var dateObj = new Date(controllerTime * 1000);
+            var dateStr = dateObj.getUTCFullYear() + '-' + 
+                          String(dateObj.getUTCMonth() + 1).padStart(2, '0') + '-' + 
+                          String(dateObj.getUTCDate()).padStart(2, '0');
+            var timeStr = String(dateObj.getUTCHours()).padStart(2, '0') + ':' + 
+                          String(dateObj.getUTCMinutes()).padStart(2, '0') + ':' + 
+                          String(dateObj.getUTCSeconds()).padStart(2, '0');
+
+            var dateEl = document.getElementById('current-date');
+            var timeEl = document.getElementById('current-time');
+            var displayEl = document.getElementById('current-time-display');
+            var syncBtn = document.getElementById('time-sync-btn');
+
+            if (dateEl) dateEl.textContent = dateStr;
+            if (timeEl) timeEl.textContent = timeStr;
+
+            if (displayEl) {
+                if (diffSec <= 5) {
+                    displayEl.classList.remove('time-unsynced');
+                    displayEl.classList.add('time-synced');
+                } else {
+                    displayEl.classList.remove('time-synced');
+                    displayEl.classList.add('time-unsynced');
+                }
+            }
+
+            if (syncBtn) {
+                if (diffSec <= 5) {
+                    syncBtn.disabled = true;
+                    syncBtn.classList.remove('btn-danger');
+                    syncBtn.classList.add('btn-secondary');
+                } else {
+                    syncBtn.disabled = false;
+                    syncBtn.classList.remove('btn-secondary');
+                    syncBtn.classList.add('btn-danger');
+                }
+            }
+        } catch (e) {
+            console.error('Time error:', e);
+            var syncBtn = document.getElementById('time-sync-btn');
+            if (syncBtn) syncBtn.disabled = false;
+        }
+    }
+
+    function startTimeUpdating() {
+        stopTimeUpdating();
+        updateModuleCurrentTime();
+        currentTimeTimer = setInterval(updateModuleCurrentTime, 1000);
+    }
+
+    function stopTimeUpdating() {
+        if (currentTimeTimer !== null) {
+            clearInterval(currentTimeTimer);
+            currentTimeTimer = null;
+        }
+    }
+
+    async function loadInitialConfig() {
+        try {
+            var results = await Promise.all([
+                apiFetch('/system/info').then(function (r) { return r.json(); }),
+                apiFetch('/network/settings').then(function (r) { return r.json(); }),
+                apiFetch('/time/service').then(function (r) { return r.json(); }),
+                apiFetch('/modbus/settings').then(function (r) { return r.json(); }),
+                apiFetch('/inputs/settings').then(function (r) { return r.json(); }),
+                apiFetch('/outputs/settings').then(function (r) { return r.json(); }),
+                apiFetch('/bacnet/settings').then(function (r) { return r.json(); }),
+                apiFetch('/current_state').then(function (r) { return r.json(); })
+            ]);
+
+            cfgSystem = results[0];
+            cfgNetwork = results[1];
+            cfgTime = results[2];
+            cfgModbus = results[3];
+            cfgInputs = results[4];
+            cfgOutputs = results[5];
+            cfgBacnet = results[6];
+            cfgCurrentState = results[7];
+
+            applyConfigToUI();
+            updateOverview();
+        } catch (e) {
+            console.error('Config error:', e);
+        }
+    }
+
+    function applyConfigToUI() {
+        if (cfgNetwork) {
+            var radio = document.querySelector('input[name="ip-mode"][value="' + cfgNetwork.ip_mode + '"]');
+            if (radio) radio.checked = true;
+            document.getElementById('net-ip').value = cfgNetwork.ip_address || '';
+            document.getElementById('net-mask').value = cfgNetwork.subnet_mask || '';
+            document.getElementById('net-gw').value = cfgNetwork.gateway || '';
+            document.getElementById('net-dns').value = cfgNetwork.dns_server || '';
+            updateNetworkFieldsVisibility();
+        }
+
+        if (cfgTime) {
+            document.getElementById('time-tz').value = cfgTime.timezone || 'UTC';
+            document.getElementById('time-ntp').value = cfgTime.ntp_server || '';
+            document.getElementById('time-auto').checked = cfgTime.auto_sync || false;
+        }
+
+        if (cfgModbus && cfgModbus.X2) {
+            document.getElementById('mb-x2-addr').value = cfgModbus.X2.address || 0;
+            document.getElementById('mb-x2-baud').value = cfgModbus.X2.baud_rate || 9600;
+            document.getElementById('mb-x2-parity').value = cfgModbus.X2.parity || 'None';
+            document.getElementById('mb-x2-stop').value = cfgModbus.X2.stop_bits || 1;
+            document.getElementById('mb-x2-delay').value = cfgModbus.X2.response_delay || 0;
+        }
+
+        if (cfgInputs) {
+            renderAIInputs(cfgInputs);
+        }
+
+        if (cfgOutputs) {
+            if (cfgOutputs.global) {
+                document.getElementById('out-glob-modbus-iface').value = cfgOutputs.global.modbus.interface || 'RS485+Ethernet';
+                document.getElementById('out-glob-modbus-timeout').value = cfgOutputs.global.modbus.timeout_sec || 0;
+                document.getElementById('out-glob-bacnet-timeout').value = cfgOutputs.global.bacnet.timeout_sec || 0;
+            }
+            if (cfgOutputs.AOx) {
+                var yesNo = currentLang === 'ru' ? ['Да', 'Нет'] : ['Yes', 'No'];
+                document.getElementById('ao-outputs-body').innerHTML = cfgOutputs.AOx.map(function (ao) {
+                    return '<tr>' +
+                        '<td style="text-align:center"><strong>AO' + ao.channel + '</strong></td>' +
+                        '<td style="text-align:center"><input type="text" class="form-input" value="' + (ao.name || '') + '" maxlength="14" data-ao-ch="' + ao.channel + '" data-field="name" style="text-align:center"></td>' +
+                        '<td style="text-align:center"><input type="number" class="form-input" value="' + ao.start_value + '" min="0" max="10" step="0.01" data-ao-ch="' + ao.channel + '" data-field="start_value" style="text-align:center;width:80px"></td>' +
+                        '<td style="text-align:center"><input type="number" class="form-input" value="' + ao.lost_value + '" min="0" max="10" step="0.01" data-ao-ch="' + ao.channel + '" data-field="lost_value" style="text-align:center;width:80px"></td>' +
+                        '<td style="text-align:center"><select data-ao-ch="' + ao.channel + '" data-field="check" class="form-select" style="width:80px"><option value="true" ' + (ao.check ? 'selected' : '') + '>' + yesNo[0] + '</option><option value="false" ' + (!ao.check ? 'selected' : '') + '>' + yesNo[1] + '</option></select></td>' +
+                        '</tr>';
+                }).join('');
+            }
+        }
+
+        if (cfgBacnet) {
+            document.getElementById('bac-port').value = cfgBacnet.port || 47808;
+            document.getElementById('bac-pass').value = cfgBacnet.password || '';
+        }
+    }
+
+    function updateOverview() {
+        if (cfgSystem) {
+            document.getElementById('ov-model').textContent = cfgSystem.model;
+            document.getElementById('ov-serial').textContent = cfgSystem.serial;
+            document.getElementById('ov-mac').textContent = cfgSystem.mac;
+            document.getElementById('ov-firmware').textContent = cfgSystem.firmware;
+            document.getElementById('ov-ip').textContent = cfgSystem.ip_address;
+            document.getElementById('ov-mask').textContent = cfgSystem.subnet_mask;
+            document.getElementById('ov-gw').textContent = cfgSystem.gateway;
+            document.getElementById('ov-dns').textContent = cfgSystem.dns_server;
+        }
+        if (cfgModbus && cfgModbus.X2) {
+            document.getElementById('ov-mb-x2-addr').textContent = cfgModbus.X2.address;
+            document.getElementById('ov-mb-x2-baud').textContent = cfgModbus.X2.baud_rate;
+            document.getElementById('ov-mb-x2-parity').textContent = cfgModbus.X2.parity;
+            document.getElementById('ov-mb-x2-stop').textContent = cfgModbus.X2.stop_bits;
+        }
+        if (cfgBacnet) document.getElementById('ov-bac-port').textContent = cfgBacnet.port;
+        if (cfgTime) {
+            document.getElementById('ov-tz').textContent = cfgTime.timezone;
+            document.getElementById('ov-ntp').textContent = cfgTime.ntp_server;
+            document.getElementById('ov-auto').textContent = cfgTime.auto_sync
+                ? (currentLang === 'ru' ? 'Да' : 'Yes')
+                : (currentLang === 'ru' ? 'Нет' : 'No');
+        }
+    }
+
+    // Рендеринг таблицы аналоговых входов (10 каналов, только V-тип)
+    function renderAIInputs(data) {
+        var vBody = document.getElementById('ai-v-body');
+        if (!vBody || !data.AI_type) return;
+
+        var vHtml = '';
+
+        for (var ch = 1; ch <= AI_CHANNEL_COUNT; ch++) {
+            var aiType = data.AI_type.find(function (t) { return t.channel === ch; }) || { description: '' };
+            var vData = data.AI_Vx.find(function (v) { return v.channel === ch; }) || { type: 0, initPoint: 0, endPoint: 10, min: 0, max: 10, correct: 0 };
+
+            var typeOptions = '';
+            typeOptions += '<option value="0" ' + (vData.type === 0 ? 'selected' : '') + '>0-10V</option>';
+            typeOptions += '<option value="1" ' + (vData.type === 1 ? 'selected' : '') + '>0-20mA</option>';
+            typeOptions += '<option value="2" ' + (vData.type === 2 ? 'selected' : '') + '>4-20mA</option>';
+
+            var desc = aiType.description || '';
+
+            vHtml += '<tr data-ch="' + ch + '">' +
+                '<td style="text-align:center"><strong>AI' + ch + '</strong></td>' +
+                '<td style="text-align:center"><input type="text" class="form-input" value="' + desc + '" maxlength="14" data-ai-ch="' + ch + '" data-field="description" style="text-align:center"></td>' +
+                '<td style="text-align:center"><select class="form-select ai-type-select" data-ch="' + ch + '">' + typeOptions + '</select></td>' +
+                '<td style="text-align:center"><input type="number" class="form-input" step="0.01" value="' + vData.initPoint + '" data-ch="' + ch + '" data-field="initPoint" style="text-align:center"></td>' +
+                '<td style="text-align:center"><input type="number" class="form-input" step="0.01" value="' + vData.endPoint + '" data-ch="' + ch + '" data-field="endPoint" style="text-align:center"></td>' +
+                '<td style="text-align:center"><input type="number" class="form-input" step="0.01" value="' + vData.min + '" data-ch="' + ch + '" data-field="min" style="text-align:center"></td>' +
+                '<td style="text-align:center"><input type="number" class="form-input" step="0.01" value="' + vData.max + '" data-ch="' + ch + '" data-field="max" style="text-align:center"></td>' +
+                '<td style="text-align:center"><input type="number" class="form-input" step="0.01" value="' + vData.correct + '" data-ch="' + ch + '" data-field="correct" style="text-align:center"></td>' +
+                '</tr>';
+        }
+
+        vBody.innerHTML = vHtml;
+
+        // Обработчик смены типа датчика
+        document.querySelectorAll('.ai-type-select').forEach(function (sel) {
+            sel.addEventListener('change', function (e) {
+                var ch = parseInt(e.target.getAttribute('data-ch'));
+                var subType = parseInt(e.target.value);
+                var v = data.AI_Vx.find(function (x) { return x.channel === ch; });
+                if (v) {
+                    v.type = subType;
+                }
+            });
+        });
+    }
+
+    // Сохранение настроек входов (только AI V-тип)
+    async function saveInputsSettings(btnId) {
+        btnId = btnId || 'inputs-save-btn';
+        
+        if (!validateAnalogInputs()) {
+            return;
+        }
+
+        var payload = { AI_type: [], AI_Vx: [] };
+
+        for (var ch = 1; ch <= AI_CHANNEL_COUNT; ch++) {
+            var sel = document.querySelector('.ai-type-select[data-ch="' + ch + '"]');
+            if (!sel) continue;
+
+            var descInput = document.querySelector('[data-ai-ch="' + ch + '"][data-field="description"]');
+            var desc = descInput ? descInput.value : '';
+            var subType = parseInt(sel.value);
+
+            payload.AI_type.push({ channel: ch, type: 'V', description: desc });
+
+            var row = document.querySelector('tr[data-ch="' + ch + '"]');
+            var mn = 0, mx = 10, co = 0, ip = 0, ep = 10;
+
+            if (row) {
+                mn = parseFloat(row.querySelector('[data-field="min"]')?.value) || 0;
+                mx = parseFloat(row.querySelector('[data-field="max"]')?.value) || 0;
+                ip = parseFloat(row.querySelector('[data-field="initPoint"]')?.value) || 0;
+                ep = parseFloat(row.querySelector('[data-field="endPoint"]')?.value) || 0;
+                co = parseFloat(row.querySelector('[data-field="correct"]')?.value) || 0;
+            }
+
+            payload.AI_Vx.push({ channel: ch, type: subType, initPoint: ip, endPoint: ep, min: mn, max: mx, correct: co });
+        }
+
+        logSave('/inputs/settings', payload);
+        
+        showSavingOverlay(translations[currentLang].saving_text);
+        var originalText = lockSaveBtn(btnId, translations[currentLang].saving_btn_text);
+        
+        try {
+            var res = await apiFetch('/inputs/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            var data = await res.json();
+            
+            await delay(FLASH_WRITE_DELAY);
+            
+            if (data.status === 'ok') {
+                cfgInputs = await (await apiFetch('/inputs/settings')).json();
+                renderAIInputs(cfgInputs);
+                showNotification(translations[currentLang].msg_saved);
+            } else {
+                showNotification(data.message || translations[currentLang].msg_save_error, true);
+            }
+        } catch (e) {
+            console.error('Save inputs failed:', e.message);
+            showNotification(translations[currentLang].msg_save_error, true);
+        } finally {
+            hideSavingOverlay();
+            unlockSaveBtn(btnId, originalText);
+        }
+    }
+
+    function initOutputsSubTabs() {
+        var panel = document.querySelector('.tab-content[data-panel="8"]');
+        if (!panel) return;
+
+        panel.querySelectorAll('.sub-tab').forEach(function (tab) {
+            tab.addEventListener('click', function () {
+                var target = tab.getAttribute('data-subtab');
+                panel.querySelectorAll('.sub-tab').forEach(function (t) { t.classList.remove('active'); });
+                tab.classList.add('active');
+                panel.querySelectorAll('.sub-tab-content').forEach(function (c) { c.classList.remove('active'); });
+                var content = panel.querySelector('[data-subtab-content="' + target + '"]');
+                if (content) {
+                    content.classList.add('active');
+                    if (target === 'control') {
+                        loadOutputsControl().then(function () { startOutputsPolling(); });
+                    } else {
+                        stopOutputsPolling();
+                        applyConfigToUI();
+                    }
+                }
+            });
+        });
+    }
+
+    function startOutputsPolling() {
+        stopOutputsPolling();
+        outputsPollingTimer = setInterval(updateOutputsState, 2000);
+    }
+
+    function stopOutputsPolling() {
+        if (outputsPollingTimer !== null) {
+            clearInterval(outputsPollingTimer);
+            outputsPollingTimer = null;
+        }
+    }
+
+    async function loadOutputsControl() {
+        try {
+            var res = await apiFetch('/outputs/state');
+            var data = await res.json();
+
+            if (data.AOx) {
+                document.getElementById('ao-control-body').innerHTML = data.AOx.map(function (ao) {
+                    return '<tr>' +
+                        '<td style="text-align:center"><strong>AO' + ao.channel + '</strong></td>' +
+                        '<td style="text-align:center">' + (ao.name || '') + '</td>' +
+                        '<td style="text-align:center"><span class="readonly-value" id="ao-current-' + ao.channel + '">' + ao.value.toFixed(2) + ' В</span></td>' +
+                        '<td style="text-align:center"><input type="number" class="form-input" id="ao-new-' + ao.channel + '" min="0" max="10" step="0.01" value="' + ao.value.toFixed(2) + '" style="width:100px;text-align:center"></td>' +
+                        '<td style="text-align:center"><button class="btn-set" onclick="window.setOutputValue(' + ao.channel + ')">Set</button></td>' +
+                        '</tr>';
+                }).join('');
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function updateOutputsState() {
+        try {
+            var res = await apiFetch('/outputs/state');
+            var data = await res.json();
+
+            if (data.AOx) {
+                data.AOx.forEach(function (ao) {
+                    var el = document.getElementById('ao-current-' + ao.channel);
+                    if (el) el.textContent = ao.value.toFixed(2) + ' В';
+                });
+            }
+        } catch (e) { /* ignore */ }
+    }
+
+    window.setOutputValue = async function (channel) {
+        var inp = document.getElementById('ao-new-' + channel);
+        var value = parseFloat(inp.value);
+        if (isNaN(value) || value < 0 || value > 10) {
+            inp.classList.add('field-invalid');
+            showNotification(currentLang === 'ru' ? 'Значение должно быть 0-10 В' : 'Value must be 0-10 V', true);
+            return;
+        }
+        inp.classList.remove('field-invalid');
+
+        logSave('/outputs/control', { type: 'AO', channel: channel, value: value });
+        try {
+            var res = await apiFetch('/outputs/control', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'AO', channel: channel, value: value })
+            });
+            var data = await res.json();
+            if (data.status === 'ok') {
+                showNotification(translations[currentLang].msg_saved);
+                updateOutputsState();
+            }
+        } catch (e) {
+            showNotification('Network error', true);
+        }
+    };
+
+    async function saveOutputsSettings(btnId) {
+        btnId = btnId || 'outputs-save-btn';
+        
+        var modbusTimeout = parseInt(document.getElementById('out-glob-modbus-timeout').value, 10);
+        var bacnetTimeout = parseInt(document.getElementById('out-glob-bacnet-timeout').value, 10);
+
+        if (isNaN(modbusTimeout) || modbusTimeout < 0 || modbusTimeout > 65535) {
+            document.getElementById('out-glob-modbus-timeout').classList.add('field-invalid');
+            showNotification(currentLang === 'ru' ? 'Время Modbus должно быть 0-65535' : 'Modbus timeout must be 0-65535', true);
+            return;
+        }
+        document.getElementById('out-glob-modbus-timeout').classList.remove('field-invalid');
+
+        if (isNaN(bacnetTimeout) || bacnetTimeout < 0 || bacnetTimeout > 65535) {
+            document.getElementById('out-glob-bacnet-timeout').classList.add('field-invalid');
+            showNotification(currentLang === 'ru' ? 'Время BACnet должно быть 0-65535' : 'BACnet timeout must be 0-65535', true);
+            return;
+        }
+        document.getElementById('out-glob-bacnet-timeout').classList.remove('field-invalid');
+
+        var aoInvalid = false;
+        document.querySelectorAll('[data-ao-ch]').forEach(function (inp) {
+            var field = inp.getAttribute('data-field');
+            if (field === 'start_value' || field === 'lost_value') {
+                var val = parseFloat(inp.value);
+                if (isNaN(val) || val < 0 || val > 10) {
+                    inp.classList.add('field-invalid');
+                    if (!aoInvalid) {
+                        showNotification(currentLang === 'ru' ? 'Значение AO должно быть 0-10 В' : 'AO value must be 0-10 V', true);
+                        aoInvalid = true;
+                    }
+                } else {
+                    inp.classList.remove('field-invalid');
+                }
+            }
+        });
+        if (aoInvalid) return;
+
+        var payload = {
+            global: {
+                modbus: { interface: document.getElementById('out-glob-modbus-iface').value, timeout_sec: modbusTimeout },
+                bacnet: { timeout_sec: bacnetTimeout }
+            },
+            AOx: []
+        };
+
+        for (var ch = 1; ch <= AO_CHANNEL_COUNT; ch++) {
+            payload.AOx.push({
+                channel: ch,
+                name: document.querySelector('[data-ao-ch="' + ch + '"][data-field="name"]').value,
+                start_value: parseFloat(document.querySelector('[data-ao-ch="' + ch + '"][data-field="start_value"]').value) || 0,
+                lost_value: parseFloat(document.querySelector('[data-ao-ch="' + ch + '"][data-field="lost_value"]').value) || 0,
+                check: document.querySelector('[data-ao-ch="' + ch + '"][data-field="check"]').value === 'true'
+            });
+        }
+
+        logSave('/outputs/settings', payload);
+        
+        showSavingOverlay(translations[currentLang].saving_text);
+        var originalText = lockSaveBtn(btnId, translations[currentLang].saving_btn_text);
+        
+        try {
+            var res = await apiFetch('/outputs/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            var data = await res.json();
+            
+            await delay(FLASH_WRITE_DELAY);
+            
+            if (data.status === 'ok') {
+                cfgOutputs = await (await apiFetch('/outputs/settings')).json();
+                updateOverview();
+                showNotification(translations[currentLang].msg_saved);
+            } else {
+                showNotification(data.message || translations[currentLang].msg_save_error, true);
+            }
+        } catch (e) {
+            console.error('Save outputs failed:', e.message);
+            showNotification(translations[currentLang].msg_save_error, true);
+        } finally {
+            hideSavingOverlay();
+            unlockSaveBtn(btnId, originalText);
+        }
+    }
+
+    function startMonitoring() {
+        stopMonitoring();
+        updateMonitoringData();
+        monitoringTimer = setInterval(updateMonitoringData, MONITORING_INTERVAL);
+    }
+
+    function stopMonitoring() {
+        if (monitoringTimer !== null) {
+            clearInterval(monitoringTimer);
+            monitoringTimer = null;
+        }
+    }
+
+    async function updateMonitoringData() {
+        try {
+            var state = await apiFetch('/current_state').then(function (r) { return r.json(); });
+
+            if (state.AIx && cfgInputs && cfgInputs.AI_type) {
+                var aiBody = document.getElementById('mon-ai-body');
+                if (aiBody) {
+                    aiBody.innerHTML = state.AIx.map(function (ai) {
+                        var config = cfgInputs.AI_type.find(function (x) { return x.channel === ai.channel; });
+                        var vData = cfgInputs.AI_Vx ? cfgInputs.AI_Vx.find(function (x) { return x.channel === ai.channel; }) : null;
+                        var typeLabel = vData ? (vTypeLabels[vData.type] || 'V') : 'V';
+                        
+                        var valueDisplay;
+                        if (ai.status === 'error') {
+                            valueDisplay = '<span class="readonly-value error">—</span>';
+                        } else {
+                            valueDisplay = '<span class="readonly-value">' + ai.value.toFixed(2) + '</span>';
+                        }
+                        
+                        return '<tr>' +
+                            '<td style="text-align:center"><strong>AI' + ai.channel + '</strong></td>' +
+                            '<td>' + (config ? config.description || '' : '') + '</td>' +
+                            '<td>' + typeLabel + '</td>' +
+                            '<td style="text-align:center">' + valueDisplay + '</td>' +
+                            '</tr>';
+                    }).join('');
+                }
+            }
+
+            if (state.AOx && cfgOutputs && cfgOutputs.AOx) {
+                var aoBody = document.getElementById('mon-ao-body');
+                if (aoBody) {
+                    aoBody.innerHTML = state.AOx.map(function (ao) {
+                        var config = cfgOutputs.AOx.find(function (x) { return x.channel === ao.channel; });
+                        var channelName = 'AO' + ao.channel;
+                        var description = config ? (config.name || '') : '';
+                        return '<tr>' +
+                            '<td style="text-align:center"><strong>' + channelName + '</strong></td>' +
+                            '<td>' + description + '</td>' +
+                            '<td style="text-align:center"><span class="readonly-value">' + ao.value.toFixed(2) + ' В</span></td>' +
+                            '</tr>';
+                    }).join('');
+                }
+            }
+        } catch (e) {
+            console.error('Monitoring error:', e);
+        }
+    }
+
+    function startFirmwarePolling() {
+        stopFirmwarePolling();
+        
+        var processFinished = false;
+        var progressBar = document.getElementById('fw-progress');
+        var progressText = document.getElementById('fw-progress-text');
+        var uploadBtn = document.getElementById('fw-upload-btn');
+        var fileInput = document.getElementById('fw-file-input');
+
+        function finishProcess(success, errorMsg) {
+            if (processFinished) return;
+            processFinished = true;
+            stopFirmwarePolling();
+
+            uploadBtn.disabled = false;
+            fileInput.disabled = false;
+
+            if (success) {
+                progressBar.style.width = '100%';
+                progressBar.style.background = '#27ae60';
+                progressText.textContent = '100%';
+                showNotification(translations[currentLang].fw_upload_success);
+                setTimeout(function() {
+                    startModuleReboot();
+                }, 1000);
+            } else {
+                progressBar.style.background = '#e74c3c';
+                progressText.textContent = '✗ ' + (errorMsg || translations[currentLang].fw_upload_error);
+                showNotification('✗ ' + (errorMsg || translations[currentLang].fw_upload_error), true);
+            }
+        }
+
+        firmwarePollingTimer = setInterval(async function () {
+            if (processFinished) return;
+
+            try {
+                var res = await apiFetch('/firmware/load');
+                var data = await res.json();
+
+                var percent = Math.min(data.percent || 0, 100);
+                progressBar.style.width = percent + '%';
+                progressText.textContent = percent + '%';
+
+                if (data.status === 'ok') {
+                    finishProcess(true);
+                } else if (data.status === 'error') {
+                    finishProcess(false, translations[currentLang].fw_upload_error);
+                }
+            } catch (e) {
+                if (e.message && e.message.includes('Session invalidated')) {
+                    finishProcess(false, 'Session invalidated');
+                } else {
+                    console.warn('Polling skipped:', e);
+                }
+            }
+        }, 800);
+    }
+
+    function stopFirmwarePolling() {
+        if (firmwarePollingTimer !== null) {
+            clearInterval(firmwarePollingTimer);
+            firmwarePollingTimer = null;
+        }
+    }
+
+    function startModuleReboot() {
+        apiFetch('/reboot', { method: 'POST' }).catch(function(e) {
+            console.error('Reboot request error:', e);
+        });
+
+        var overlay = document.getElementById('reboot-overlay');
+        var counter = document.getElementById('reboot-counter');
+        var seconds = 10;
+        
+        counter.textContent = seconds;
+        overlay.classList.add('active');
+
+        rebootCountdownTimer = setInterval(function() {
+            seconds--;
+            counter.textContent = seconds;
+            
+            if (seconds <= 0) {
+                clearInterval(rebootCountdownTimer);
+                rebootCountdownTimer = null;
+                overlay.classList.remove('active');
+                
+                reconnectToModule();
+            }
+        }, 1000);
+    }
+
+    async function reconnectToModule() {
+        try {
+            await apiFetch('/system/info');
+            
+            SessionToken = null;
+            
+            showNotification(translations[currentLang].fw_reloading, false);
+            
+            setTimeout(function() {
+                location.reload();
+            }, 1500);
+        } catch (e) {
+            console.error('Reconnect error:', e);
+            showNotification(translations[currentLang].fw_reloading, false);
+            setTimeout(function() {
+                location.reload();
+            }, 1500);
+        }
+    }
+
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        applyTranslations();
+
+        document.getElementById('menu-toggle').addEventListener('click', toggleSidebar);
+        document.getElementById('overlay').addEventListener('click', toggleSidebar);
+
+        document.getElementById('login-btn').addEventListener('click', async function () {
+            try {
+                var r = await apiFetch('/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ 
+                        password: document.getElementById('login-password').value 
+                    })
+                });
+                var d = await r.json();
+                
+                if (d.status === 'ok') {
+                    if (d.token) {
+                        SessionToken = d.token;
+                    }
+                    
+                    document.getElementById('login-overlay').style.display = 'none';
+                    
+                    loadInitialConfig();
+                } else {
+                    showNotification(translations[currentLang].login_error, true);
+                }
+            } catch (e) {
+                console.error('Login error:', e);
+                showNotification(translations[currentLang].connection_error, true);
+            }
+        });
+
+        document.querySelectorAll('.lang-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.lang-btn').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                currentLang = btn.getAttribute('data-lang');
+                applyTranslations();
+                applyConfigToUI();
+                updateOverview();
+            });
+        });
+
+        document.querySelectorAll('.nav-item[data-panel]').forEach(function (item) {
+            item.addEventListener('click', function () {
+                document.querySelectorAll('.nav-item').forEach(function (i) { i.classList.remove('active'); });
+                item.classList.add('active');
+                var panel = item.getAttribute('data-panel');
+                document.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
+                var target = document.querySelector('.tab-content[data-panel="' + panel + '"]');
+                if (target) target.classList.add('active');
+
+                if (window.innerWidth < 768) toggleSidebar();
+
+                if (panel === '9') startMonitoring(); else stopMonitoring();
+                if (panel === '8') {
+                    var activeSubTab = document.querySelector('.tab-content[data-panel="8"] .sub-tab.active');
+                    var subTabTarget = activeSubTab ? activeSubTab.getAttribute('data-subtab') : 'settings';
+                    if (subTabTarget === 'control') {
+                        loadOutputsControl().then(function () { startOutputsPolling(); });
+                    } else {
+                        stopOutputsPolling();
+                        applyConfigToUI();
+                    }
+                } else {
+                    stopOutputsPolling();
+                }
+                if (panel === '2') startTimeUpdating(); else stopTimeUpdating();
+            });
+        });
+
+        document.querySelector('.nav-header').addEventListener('click', function () {
+            this.nextElementSibling.classList.toggle('active');
+        });
+
+        document.getElementById('net-dhcp').addEventListener('change', updateNetworkFieldsVisibility);
+        document.getElementById('net-manual').addEventListener('change', updateNetworkFieldsVisibility);
+
+        document.getElementById('net-save-btn').addEventListener('click', function () {
+            var ip = document.getElementById('net-ip').value;
+            var mask = document.getElementById('net-mask').value;
+            var gw = document.getElementById('net-gw').value;
+            var dns = document.getElementById('net-dns').value;
+
+            var isValid = true;
+            var fields = [
+                { id: 'net-ip', value: ip },
+                { id: 'net-mask', value: mask },
+                { id: 'net-gw', value: gw },
+                { id: 'net-dns', value: dns }
+            ];
+
+            fields.forEach(function (f) {
+                var el = document.getElementById(f.id);
+                if (!isValidIPv4(f.value)) {
+                    el.classList.add('field-invalid');
+                    isValid = false;
+                } else {
+                    el.classList.remove('field-invalid');
+                }
+            });
+
+            if (!isValid) {
+                showNotification(translations[currentLang].net_invalid_ip, true);
+                return;
+            }
+
+            document.getElementById('modal-overlay').classList.add('active');
+        });
+
+        document.getElementById('modal-confirm').addEventListener('click', async function () {
+            document.getElementById('modal-overlay').classList.remove('active');
+            var payload = {
+                ip_mode: document.querySelector('input[name="ip-mode"]:checked').value,
+                ip_address: document.getElementById('net-ip').value,
+                subnet_mask: document.getElementById('net-mask').value,
+                gateway: document.getElementById('net-gw').value,
+                dns_server: document.getElementById('net-dns').value
+            };
+            logSave('/network/settings', payload);
+            await apiFetch('/network/settings', { method: 'POST', body: JSON.stringify(payload) });
+            location.reload();
+        });
+
+        document.getElementById('modal-cancel').addEventListener('click', function () {
+            document.getElementById('modal-overlay').classList.remove('active');
+        });
+
+        document.getElementById('time-save-btn').addEventListener('click', async function () {
+            var ntp = document.getElementById('time-ntp').value;
+            if (ntp && !isValidNTP(ntp)) {
+                document.getElementById('time-ntp').classList.add('field-invalid');
+                showNotification(translations[currentLang].time_invalid_ntp, true);
+                return;
+            }
+            document.getElementById('time-ntp').classList.remove('field-invalid');
+
+            var payload = {
+                timezone: document.getElementById('time-tz').value,
+                ntp_server: ntp,
+                auto_sync: document.getElementById('time-auto').checked
+            };
+            logSave('/time/service', payload);
+            
+            showSavingOverlay(translations[currentLang].saving_text);
+            var originalText = lockSaveBtn('time-save-btn', translations[currentLang].saving_btn_text);
+            
+            try {
+                var res = await apiFetch('/time/service', { method: 'POST', body: JSON.stringify(payload) });
+                var data = await res.json();
+                
+                await delay(FLASH_WRITE_DELAY);
+                
+                if (data.status === 'ok') {
+                    cfgTime = await (await apiFetch('/time/service')).json();
+                    updateOverview();
+                    showNotification(translations[currentLang].msg_saved);
+                } else {
+                    showNotification(data.message || translations[currentLang].msg_save_error, true);
+                }
+            } catch (e) {
+                console.error('Save time service failed:', e.message);
+                showNotification(translations[currentLang].msg_save_error, true);
+            } finally {
+                hideSavingOverlay();
+                unlockSaveBtn('time-save-btn', originalText);
+            }
+        });
+
+        document.getElementById('time-set-btn').addEventListener('click', async function () {
+            var dateVal = document.getElementById('time-date').value;
+            var timeVal = document.getElementById('time-time').value;
+            
+            if (!dateVal || !timeVal) {
+                showNotification(translations[currentLang].time_invalid_dt, true);
+                return;
+            }
+            
+            var parts = dateVal.split('-');
+            var timeParts = timeVal.split(':');
+            var year = parseInt(parts[0], 10);
+            var month = parseInt(parts[1], 10) - 1;
+            var day = parseInt(parts[2], 10);
+            var hours = parseInt(timeParts[0], 10);
+            var minutes = parseInt(timeParts[1], 10);
+            var seconds = timeParts[2] ? parseInt(timeParts[2], 10) : 0;
+            
+            var dateObj = new Date(Date.UTC(year, month, day, hours, minutes, seconds));
+            
+            if (isNaN(dateObj.getTime())) {
+                showNotification(translations[currentLang].time_invalid_dt, true);
+                return;
+            }
+            
+            var timestamp = Math.floor(dateObj.getTime() / 1000);
+            
+            await apiFetch('/time/set', { 
+                method: 'POST', 
+                body: JSON.stringify({ timestamp: timestamp }) 
+            });
+            showNotification(translations[currentLang].msg_saved);
+        });
+
+        document.getElementById('time-sync-btn').addEventListener('click', async function () {
+            var timestamp = getPCLocalTimestamp();
+            
+            await apiFetch('/time/sync-pc', { 
+                method: 'POST', 
+                body: JSON.stringify({ timestamp: timestamp }) 
+            });
+            showNotification(translations[currentLang].msg_saved);
+            updateModuleCurrentTime();
+        });
+
+        document.getElementById('mb-save-btn').addEventListener('click', async function () {
+            var x2Addr = parseInt(document.getElementById('mb-x2-addr').value, 10);
+            var x2Delay = parseInt(document.getElementById('mb-x2-delay').value, 10);
+
+            if (isNaN(x2Addr) || x2Addr < 0 || x2Addr > 254) {
+                document.getElementById('mb-x2-addr').classList.add('field-invalid');
+                showNotification(currentLang === 'ru' ? 'Адрес X2 должен быть 0-254' : 'X2 address must be 0-254', true);
+                return;
+            }
+            document.getElementById('mb-x2-addr').classList.remove('field-invalid');
+
+            if (isNaN(x2Delay) || x2Delay < 0 || x2Delay > 20) {
+                document.getElementById('mb-x2-delay').classList.add('field-invalid');
+                showNotification(currentLang === 'ru' ? 'Задержка X2 должна быть 0-20 мс' : 'X2 delay must be 0-20 ms', true);
+                return;
+            }
+            document.getElementById('mb-x2-delay').classList.remove('field-invalid');
+
+            var payload = {
+                X2: {
+                    address: x2Addr,
+                    baud_rate: parseInt(document.getElementById('mb-x2-baud').value),
+                    parity: document.getElementById('mb-x2-parity').value,
+                    stop_bits: parseInt(document.getElementById('mb-x2-stop').value),
+                    response_delay: x2Delay
+                }
+            };
+
+            logSave('/modbus/settings', payload);
+            
+            showSavingOverlay(translations[currentLang].saving_text);
+            var originalText = lockSaveBtn('mb-save-btn', translations[currentLang].saving_btn_text);
+            
+            try {
+                var res = await apiFetch('/modbus/settings', { 
+                    method: 'POST', 
+                    body: JSON.stringify(payload) 
+                });
+                var data = await res.json();
+                
+                await delay(FLASH_WRITE_DELAY);
+                
+                if (data.status === 'ok') {
+                    cfgModbus = await (await apiFetch('/modbus/settings')).json();
+                    updateOverview();
+                    showNotification(translations[currentLang].msg_saved);
+                } else {
+                    showNotification(data.message || translations[currentLang].msg_save_error, true);
+                }
+            } catch (e) {
+                console.error('Save Modbus failed:', e.message);
+                showNotification(translations[currentLang].msg_save_error, true);
+            } finally {
+                hideSavingOverlay();
+                unlockSaveBtn('mb-save-btn', originalText);
+            }
+        });
+
+        document.getElementById('inputs-save-btn').addEventListener('click', function () {
+            saveInputsSettings('inputs-save-btn');
+        });
+        
+        document.getElementById('outputs-save-btn').addEventListener('click', function () {
+            saveOutputsSettings('outputs-save-btn');
+        });
+
+        document.getElementById('bac-save-btn').addEventListener('click', async function () {
+            var port = parseInt(document.getElementById('bac-port').value, 10);
+            if (isNaN(port) || port < 0 || port > 65535) {
+                document.getElementById('bac-port').classList.add('field-invalid');
+                showNotification(currentLang === 'ru' ? 'Порт должен быть 0-65535' : 'Port must be 0-65535', true);
+                return;
+            }
+            document.getElementById('bac-port').classList.remove('field-invalid');
+            
+            var payload = { port: port, password: document.getElementById('bac-pass').value };
+            logSave('/bacnet/settings', payload);
+            
+            showSavingOverlay(translations[currentLang].saving_text);
+            var originalText = lockSaveBtn('bac-save-btn', translations[currentLang].saving_btn_text);
+            
+            try {
+                var res = await apiFetch('/bacnet/settings', { method: 'POST', body: JSON.stringify(payload) });
+                var data = await res.json();
+                
+                await delay(FLASH_WRITE_DELAY);
+                
+                if (data.status === 'ok') {
+                    cfgBacnet = await (await apiFetch('/bacnet/settings')).json();
+                    updateOverview();
+                    showNotification(translations[currentLang].msg_saved);
+                } else {
+                    showNotification(data.message || translations[currentLang].msg_save_error, true);
+                }
+            } catch (e) {
+                console.error('Save BACnet failed:', e.message);
+                showNotification(translations[currentLang].msg_save_error, true);
+            } finally {
+                hideSavingOverlay();
+                unlockSaveBtn('bac-save-btn', originalText);
+            }
+        });
+
+        document.getElementById('sec-save-btn').addEventListener('click', async function () {
+            var newPass = document.getElementById('sec-new-pass').value;
+            var confPass = document.getElementById('sec-conf-pass').value;
+
+            if (newPass !== confPass) {
+                showNotification(translations[currentLang].passwords_mismatch, true);
+                return;
+            }
+
+            var payload = {
+                new_password: newPass,
+                confirm_password: confPass
+            };
+            logSave('/new/password', payload);
+            
+            showSavingOverlay(translations[currentLang].saving_text);
+            var originalText = lockSaveBtn('sec-save-btn', translations[currentLang].saving_btn_text);
+            
+            try {
+                var res = await apiFetch('/new/password', { method: 'POST', body: JSON.stringify(payload) });
+                var data = await res.json();
+                
+                await delay(FLASH_WRITE_DELAY);
+                
+                if (data.status === 'ok') {
+                    showNotification(translations[currentLang].msg_saved);
+                } else {
+                    showNotification(data.message, true);
+                }
+            } catch (e) {
+                console.error('Save password failed:', e.message);
+                showNotification(translations[currentLang].msg_save_error, true);
+            } finally {
+                hideSavingOverlay();
+                unlockSaveBtn('sec-save-btn', originalText);
+            }
+        });
+
+        document.getElementById('bac-toggle-pass').addEventListener('click', function () {
+            var passInput = document.getElementById('bac-pass');
+            var eyeIcon = document.getElementById('bac-eye-icon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><line x1="1" y1="1" x2="23" y2="23"/>';
+            } else {
+                passInput.type = 'password';
+                eyeIcon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+            }
+        });
+
+        document.getElementById('fw-file-input').addEventListener('change', async function (e) {
+            var file = e.target.files[0];
+            var uploadBtn = document.getElementById('fw-upload-btn');
+            var progressText = document.getElementById('fw-progress-text');
+            var progressBar = document.getElementById('fw-progress');
+            var fileLabel = document.getElementById('fw-file-label');
+            var fileName = document.getElementById('fw-file-name');
+
+            uploadBtn.disabled = true;
+            progressBar.style.width = '0%';
+            progressText.textContent = '0%';
+            window.selectedFirmwareFile = null;
+
+            if (!file) {
+                fileLabel.classList.remove('selected');
+                fileName.textContent = translations[currentLang].fw_select_file;
+                return;
+            }
+
+            var isValid = await validateFirmwareFile(file);
+
+            if (!isValid) {
+                showNotification(translations[currentLang].fw_file_invalid, true);
+                fileLabel.classList.remove('selected');
+                fileName.textContent = translations[currentLang].fw_select_file;
+                this.value = '';
+                return;
+            }
+
+            window.selectedFirmwareFile = file;
+            uploadBtn.disabled = false;
+            fileLabel.classList.add('selected');
+            fileName.textContent = file.name + ' (' + file.size + ' ' + translations[currentLang].fw_file_size_bytes + ')';
+        });
+
+        document.getElementById('fw-upload-btn').addEventListener('click', function () {
+            var file = window.selectedFirmwareFile;
+            var fileInput = document.getElementById('fw-file-input');
+            var progressBar = document.getElementById('fw-progress');
+            var progressText = document.getElementById('fw-progress-text');
+            var uploadBtn = document.getElementById('fw-upload-btn');
+
+            if (!file) {
+                showNotification(translations[currentLang].fw_select_file, true);
+                return;
+            }
+
+            progressBar.style.width = '0%';
+            progressBar.style.background = '#3498db';
+            progressText.textContent = '0%';
+            
+            uploadBtn.disabled = true;
+            fileInput.disabled = true;
+
+            var formData = new FormData();
+            formData.append('firmware', file);
+
+            fetch(MODULE_BASE_URL + '/firmware/upload', {
+                method: 'POST',
+                headers: SessionToken ? { 'Authorization': 'Basic ' + SessionToken } : {},
+                body: formData
+            }).then(async res => {
+                if (!res.ok) {
+                    var err = await res.json().catch(() => ({}));
+                    console.error('Upload failed:', err);
+                }
+            }).catch(err => {
+                console.error('Upload fetch error:', err);
+            });
+
+            startFirmwarePolling();
+        });
+
+        initOutputsSubTabs();
+
+        window.addEventListener('beforeunload', function () {
+            stopMonitoring();
+            stopOutputsPolling();
+            stopTimeUpdating();
+            stopFirmwarePolling();
+            if (rebootCountdownTimer !== null) {
+                clearInterval(rebootCountdownTimer);
+                rebootCountdownTimer = null;
+            }
+        });
+    });
+    </script>
+</body>
+</html>
